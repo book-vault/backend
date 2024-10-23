@@ -1,0 +1,40 @@
+# This pipeline is designed to build a Docker image from the repository
+# and push it to GitHub Container Registry (ghcr.io) on a code push event
+# or manual trigger. It logs in using GitHub secrets, builds the Docker image,
+# pushes it to the registry, and then logs out.
+
+name: Build And Push
+
+on:
+  push:
+    branches:
+      - main # Triggers on push to the main branch
+  workflow_dispatch: # Allows manually triggering the workflow
+
+env:
+  IMAGE_NAME: ghcr.io/book-vault/backend
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code from the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Log in to GitHub Container Registry using secrets
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # Build the Docker image and tag it
+      - name: Build Docker image
+        run: docker build -t $IMAGE_NAME .
+
+      # Push the Docker image to GitHub Container Registry
+      - name: Push Docker image to GitHub Container Registry
+        run: docker push $IMAGE_NAME
+
+      # Log out from Docker
+      - name: Log out from Docker
+        run: docker logout ghcr.io
