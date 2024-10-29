@@ -16,10 +16,13 @@ jobs:
         env:
           KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
 
+      - name: list all files
+        run: ls
+
       - name: Deploy deployments.yaml
         uses: actions-hub/kubectl@master
         with:
-          args: apply -f ./kubernetes/deployments.yaml
+          args: apply -f /kubernetes/deployments.yaml
 
       - name: Deploy service.yaml
         uses: actions-hub/kubectl@master
