@@ -1,0 +1,29 @@
+name: Deploy Kubernetes
+
+on:
+  # This workflow is triggered manually through the GitHub interface
+  workflow_dispatch:
+
+jobs:
+  build:
+    # Specify that the job should run on the latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        # This step checks out your repository code so that it can be accessed in subsequent steps
+        uses: actions/checkout@v3
+
+      - name: Configure k8s with github action
+        # This step configures the Kubernetes environment using a GitHub Action
+        uses: actions-hub/kubectl@master
+        env:
+          # Set the KUBE_CONFIG environment variable using a GitHub secret for authentication with the Kubernetes cluster
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Deploy ingress.yaml
+        # This step applies the Kubernetes configuration specified in ingress.yaml
+        uses: actions-hub/kubectl@master
+        with:
+          # Use the kubectl command to apply the ingress configuration
+          args: apply -f ./kubernetes/ingress.yaml
