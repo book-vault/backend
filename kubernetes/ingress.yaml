@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bv-backend-igrs
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - backend.bookvault.maniish.in
+    secretName: bookvault-tls
+  rules:
+  - host: backend.bookvault.maniish.in
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: bv-backend-svc
+            port:
+              number: 80
