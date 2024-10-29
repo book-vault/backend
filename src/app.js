@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -11,17 +10,25 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const getEnvVar = (name) => {
+    const value = process.env[name];
+    if (!value) {
+        throw new Error(`Environment variable ${name} is not defined`);
+    }
+    return value;
+};
+
 // MySQL connection
 const db = mysql.createConnection({
-    host: process.env.DATABASE_ENDPOINT || 'localhost',
-    user: process.env.MYSQL_USER || 'root',
-    password: process.env.MYSQL_PASSWORD || 'password',
-    database: process.env.MYSQL_DATABASE || 'bvDB',
-    port: process.env.MYSQL_PORT
+    host: getEnvVar('DATABASE_ENDPOINT'),
+    user: getEnvVar('MYSQL_USER'),
+    password: getEnvVar('MYSQL_PASSWORD'),
+    database: getEnvVar('MYSQL_DATABASE'),
+    port: getEnvVar('MYSQL_PORT')
 });
 
-
 db.connect((err) => {
+    sleep(3000);
     if (err) {
         console.error('Error connecting to the database:', err);
         console.log(`waiting for 5 sec`)
@@ -31,7 +38,6 @@ db.connect((err) => {
                 console.error('Error connecting to the database:', err);
                 process.exit(1);
             }
-            console.log('Connected to the database');
         });
     }
     console.log('Connected to the database');

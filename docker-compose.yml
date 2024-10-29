@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    image: ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+      args:
+        MYSQL_USER: ${DOCKER_MYSQL_USER}
+        MYSQL_PORT: ${DOCKER_MYSQL_PORT}
+        MYSQL_DATABASE: ${DOCKER_MYSQL_DATABASE}
+        DATABASE_ENDPOINT: ${DOCKER_DATABASE_ENDPOINT}
+        MYSQL_PASSWORD: ${DOCKER_MYSQL_PASSWORD}

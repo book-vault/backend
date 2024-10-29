@@ -11,9 +11,6 @@ on:
       - main # Triggers on push to the main branch
   workflow_dispatch: # Allows manually triggering the workflow
 
-env:
-  IMAGE_NAME: ghcr.io/book-vault/backend
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,15 +22,26 @@ jobs:
 
       # Log in to GitHub Container Registry using secrets
       - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        run: echo "${{ secrets.PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       # Build the Docker image and tag it
       - name: Build Docker image
-        run: docker build -t $IMAGE_NAME .
+        run: docker-compose build
+        env:
+          DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }}
+          DOCKER_IMAGE_TAG: ${{ vars.DOCKER_IMAGE_TAG }}
+          DOCKER_MYSQL_USER: ${{ vars.DOCKER_MYSQL_USER }}
+          DOCKER_MYSQL_PORT: ${{ vars.DOCKER_MYSQL_PORT }}
+          DOCKER_MYSQL_DATABASE: ${{ vars.DOCKER_MYSQL_DATABASE }}
+          DOCKER_DATABASE_ENDPOINT: ${{ secrets.DOCKER_DATABASE_ENDPOINT }}
+          DOCKER_MYSQL_PASSWORD: ${{ secrets.DOCKER_MYSQL_PASSWORD }}
 
       # Push the Docker image to GitHub Container Registry
       - name: Push Docker image to GitHub Container Registry
-        run: docker push $IMAGE_NAME
+        run: docker push $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
+        env:
+          DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }}
+          DOCKER_IMAGE_TAG: ${{ vars.DOCKER_IMAGE_TAG }}
 
       # Log out from Docker
       - name: Log out from Docker
