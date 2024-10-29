@@ -1,4 +1,4 @@
-name: Deploy Kubernetes
+name: Deploy K8s Deployment
 
 on:
   # This workflow is triggered manually through the GitHub interface
