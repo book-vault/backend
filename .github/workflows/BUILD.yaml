@@ -1,24 +1,25 @@
-# This pipeline is designed to build a Docker image from the repository
-# and push it to GitHub Container Registry (ghcr.io) on a code push event
-# or manual trigger. It logs in using GitHub secrets, builds the Docker image,
-# pushes it to the registry, and then logs out.
-
+# This pipeline builds a Docker image from the repository and pushes it to GitHub Container Registry
 name: Build And Push
 
 on:
   push:
     branches:
-      - main # Triggers on push to the main branch
-  workflow_dispatch: # Allows manually triggering the workflow
+      - main  # Triggers on push to the main branch
+  workflow_dispatch:  # Allows manually triggering the workflow
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       # Checkout the code from the repository
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      # Set up Docker Compose
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
 
       # Log in to GitHub Container Registry using secrets
       - name: Log in to GitHub Container Registry
@@ -26,7 +27,6 @@ jobs:
 
       # Build the Docker image and tag it
       - name: Build Docker image
-        run: docker-compose build
         env:
           DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }}
           DOCKER_IMAGE_TAG: ${{ vars.DOCKER_IMAGE_TAG }}
@@ -35,13 +35,14 @@ jobs:
           DOCKER_MYSQL_DATABASE: ${{ vars.DOCKER_MYSQL_DATABASE }}
           DOCKER_DATABASE_ENDPOINT: ${{ secrets.DOCKER_DATABASE_ENDPOINT }}
           DOCKER_MYSQL_PASSWORD: ${{ secrets.DOCKER_MYSQL_PASSWORD }}
+        run: docker-compose build
 
       # Push the Docker image to GitHub Container Registry
       - name: Push Docker image to GitHub Container Registry
-        run: docker push $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
         env:
           DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }}
           DOCKER_IMAGE_TAG: ${{ vars.DOCKER_IMAGE_TAG }}
+        run: docker push ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
 
       # Log out from Docker
       - name: Log out from Docker
