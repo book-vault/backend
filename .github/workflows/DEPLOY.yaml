@@ -19,10 +19,10 @@ jobs:
       - name: list all files
         run: ls
 
-      - name: Deploy deployments.yaml
+      - name: Deploy deployment.yaml
         uses: actions-hub/kubectl@master
         with:
-          args: apply -f /kubernetes/deployments.yaml
+          args: apply -f ./kubernetes/deployment.yaml
 
       - name: Deploy service.yaml
         uses: actions-hub/kubectl@master
@@ -32,4 +32,4 @@ jobs:
       - name: Deploy ingress.yaml
         uses: actions-hub/kubectl@master
         with:
-          args: apply -f ./kubernetes/service.yaml
+          args: apply -f ./kubernetes/ingress.yaml
