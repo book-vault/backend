@@ -2,6 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: bv-backend-igrs
+  namespace: default
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-dns-cloudflare
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
