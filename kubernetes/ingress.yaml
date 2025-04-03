@@ -11,10 +11,10 @@ spec:
   ingressClassName: traefik
   tls:
   - hosts:
-    - backend.bookvault.maniish.in
+    - backend.bookvault.manish.kr
     secretName: bookvault-cert
   rules:
-  - host: backend.bookvault.maniish.in
+  - host: backend.bookvault.manish.kr
     http:
       paths:
       - path: /

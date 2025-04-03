@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bv-backend-dep
-  namespace: default
+  name: bookvault-dep
+  namespace: bookvault-ns
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -19,5 +19,38 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
+        volumeMounts:
+        - name: app-logs
+          mountPath: /app/logs
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+      - name: fluentd
+        image: ghcr.io/book-vault/fluentd:v1
+        env:
+        - name: FLUENTD_CONF
+          value: "fluent.conf"
+        volumeMounts:
+        - name: app-logs
+          mountPath: /app/logs
+        - name: fluentd-config
+          mountPath: /fluentd/etc
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+      volumes:
+      - name: app-logs
+        emptyDir: {}
+      - name: fluentd-config
+        configMap:
+          name: fluentd-config
       imagePullSecrets:
       - name: ghcr-secret
